@@ -42,13 +42,14 @@ public class T0Calib extends AnalysisMonitor{
     //private HipoDataEvent hipoEvent = null;
     private SchemaFactory schemaFactory = new SchemaFactory();
     PrintWriter pw = null;
+    File outfile = null;
     private int runNumber;
     private String analTabs = "Corrected TDC";;
     public T0Calib(String name, ConstantsManager ccdb) throws FileNotFoundException {
         super(name, ccdb);
         this.setAnalysisTabNames(analTabs);
         this.init(false, "T0");
-        File outfile = new File("Files/ccdbConstantst0.txt");
+        outfile = new File("Files/ccdbConstantst0.txt");
         pw = new PrintWriter(outfile);
         pw.printf("#& Sector Superlayer Slot Cable T0Correction T0Error\n");
         
@@ -164,10 +165,8 @@ public class T0Calib extends AnalysisMonitor{
         this.plotFits();
     }
     public void plotFits() {
-        
-        pw.close();
         File file2 = new File("");
-
+	file2 = outfile;
         DateFormat df = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss_aa");
         String fileName = "Files/ccdb_run" + this.runNumber + "time_" 
                 + df.format(new Date())  + ".txt";
@@ -181,17 +180,17 @@ public class T0Calib extends AnalysisMonitor{
                 {
                     for (int l = 0; l < nCables6; l++)
                     { 
-                        if(this.fitThisHisto(this.TDCHis.get(new Coordinate(i,j,k,l)))==true) {
+                        // if(this.fitThisHisto(this.TDCHis.get(new Coordinate(i,j,k,l)))==true) {
                             this.runFit(i, j, k, l);
                             int binmax = this.TDCHis.get(new Coordinate(i,j,k,l)).getMaximumBin();
                             fitMax[i][j][k][l] = this.TDCHis.get(new Coordinate(i,j,k,l)).getDataX(binmax);
                             
-                        }
+                        // }
                     }
                 }
             }
         }
-            
+        pw.close();
         this.getCalib().fireTableDataChanged();  
         
     }
@@ -440,6 +439,10 @@ public class T0Calib extends AnalysisMonitor{
         double ed = f1.parameter(0).error();
         double T0 = n/d;
         double T0Err = this.calcError(n, en, d, ed);
+	if(Double.isNaN(T0)|| Double.isNaN(T0Err)){
+            T0 = 0.0;
+            T0Err = 0.0;
+        }
         T0val[1] =T0Err;
         T0val[0] = T0;
         h.setOptStat(0);
