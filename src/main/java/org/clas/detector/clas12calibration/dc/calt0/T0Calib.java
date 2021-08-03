@@ -168,7 +168,7 @@ public class T0Calib extends AnalysisMonitor{
         File file2 = new File("");
 	file2 = outfile;
         DateFormat df = new SimpleDateFormat("MM-dd-yyyy_hh.mm.ss_aa");
-        String fileName = "Files/ccdb_run" + this.runNumber + "time_" 
+        String fileName = "Files/ccdb_T0Corr_run" + this.runNumber + "time_" 
                 + df.format(new Date())  + ".txt";
         file2.renameTo(new File(fileName));
         
